@@ -28,7 +28,7 @@ const boundaries = []
 
 const offset = {
     x: -730,
-    y: -550
+    y: -570
 }
 
 collisionsMap.forEach((row, i) => {
@@ -57,19 +57,18 @@ const playerImage = new Image()
 playerImage.src = './img/walk_Down.png'
 
 
-const scale = 3.5; // Fator de escala (aumenta o tamanho)
-const cropWidth = playerImage.width / 8; // Largura de um frame do sprite
+
+const cropWidth = playerImage.width / 4; // Largura de um frame do sprite
 const cropHeight = playerImage.height;  // Altura de um frame do sprite
 class Sprite {
-    constructor({ position, velocity, image, frames = { max: 1 }, scale = 1 }) {
+    constructor({ position, velocity, image, frames = { max: 1 }}) {
         this.position = position;
         this.image = image;
         this.frames = frames;
-        this.scale = scale; // Adiciona o fator de escala como propriedade
        
         this.image.onload = () => {
             this.width = this.image.width / this.frames.max
-            this.height = this.image.height
+            this.height = this.image.height 
         }
     }
 
@@ -82,20 +81,19 @@ class Sprite {
             this.image.height, // altura do recorte
             this.position.x,
             this.position.y,
-            (this.image.width / this.frames.max) * this.scale, // largura escalada
-            this.image.height * this.scale // altura escalada
+            (this.image.width / this.frames.max), // largura escalada
+            this.image.height
         );
     }
 }
 
 const player = new Sprite({
     position: {
-        x: 440, // x centralizado no canvas
-        y: 200 // y centralizado no canvas
+        x: 500, // x centralizado no canvas
+        y: 300 // y centralizado no canvas
     },
     image: playerImage,
-    frames: { max: 8 }, // Número de frames no sprite
-    scale: scale
+    frames: { max: 4 }, // Número de frames no sprite
 });
 
 
@@ -125,7 +123,7 @@ const keys = {
 const movables = [background, ...boundaries]
 
 function rectangularCollision ({rectangle1, rectangle2}){
-    return(rectangle1.position.x + rectangle1.width >= rectangle2.position.x && 
+    return(rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
         rectangle1.position.x <= rectangle2.position.x + rectangle2.width &&
         rectangle1.position.y <= rectangle2.position.y + rectangle2.height &&
         rectangle1.position.y + rectangle1.height >= rectangle2.position.y)
