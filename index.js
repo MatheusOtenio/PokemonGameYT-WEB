@@ -1,6 +1,7 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
+
 canvas.width = 1024
 canvas.height = 576
 
@@ -83,7 +84,10 @@ const player = new Sprite({
         y: 300 // y centralizado no canvas
     },
     image: playerDownImage,
-    frames: { max: 4 }, // Número de frames no sprite
+    frames: { 
+        max: 4,
+        hold: 20,
+    }, // Número de frames no sprite
     sprites: {
         down: playerDownImage,
         up: playerUpImage,
@@ -91,7 +95,6 @@ const player = new Sprite({
         right: playerRightImage,
     }
 });
-
 
 const background = new Sprite({
     position:{
@@ -137,9 +140,12 @@ function rectangularCollision ({rectangle1, rectangle2}){
         rectangle1.position.y + rectangle1.height >= rectangle2.position.y)
 }
 
+const battle = {
+    initiated: false
+}
 
 function animate() {
-    window.requestAnimationFrame(animate);
+    const animationId = window.requestAnimationFrame(animate);
 
     // Desenha o background na posição atualizada
     background.draw();
@@ -164,6 +170,11 @@ function animate() {
 
     player.draw()
     foreground.draw()
+
+    let moving = true
+    player.animate = false
+    
+    if (battle.initiated) return
 
 //ZONAS DE BATALHA
     if (keys.w.pressed || keys.s.pressed || keys.a.pressed || keys.d.pressed) {
@@ -194,17 +205,41 @@ function animate() {
                 && Math.random() < 0.01
             ) {
                 console.log('zona');
+
+                // desativar a animação atual
+                window.cancelAnimationFrame(animationId)
+
+                battle.initiated = true
+                gsap.to('#overlappingDiv',{
+                    opacity: 1,
+                    repeat: 3,
+                    yoyo: true,
+                    duration: 0.4,
+                    onComplete() {
+                        gsap.to('#overlappingDiv', {
+                            opacity: 1,
+                            duration: 0.4,
+                            onComplete(){
+                                // activate nova animação
+                                animateBattle()
+                                gsap.to('#overlappingDiv', {
+                                    opacity: 0,
+                                    duration: 0.4
+                                })
+                            }
+                        })
+                    }
+                })
+                
                 break;
             }
         }
     }
     
 
-    let moving = true
-    player.moving = false
     // Movimento ao pressionar teclas
     if (keys.w.pressed && lastKey === 'w') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.up
         for (let i = 0 ; i < boundaries.length; i++){
             const boundary = boundaries [i]
@@ -225,7 +260,7 @@ function animate() {
         movables.forEach(movable => {movable.position.y += 3})
 
     }else if (keys.s.pressed && lastKey === 's') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.down
         for (let i = 0 ; i < boundaries.length; i++){
             const boundary = boundaries [i]
@@ -246,7 +281,7 @@ function animate() {
         movables.forEach(movable => {movable.position.y -= 3})
 
     }else if (keys.a.pressed && lastKey === 'a') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.left
         for (let i = 0 ; i < boundaries.length; i++){
             const boundary = boundaries [i]
@@ -267,7 +302,7 @@ function animate() {
         movables.forEach(movable => {movable.position.x += 3})
 
     }else if (keys.d.pressed && lastKey === 'd') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.right
         for (let i = 0 ; i < boundaries.length; i++){
             const boundary = boundaries [i]
@@ -291,8 +326,57 @@ function animate() {
 }
 
 
-animate()
+//animate()
 
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './img/battleBackground.png'
+const battleBackground = new Sprite ({
+    position:{
+        x: 0,
+        y: 0
+    },
+    image: battleBackgroundImage
+})
+
+const draggleImage = new Image()
+draggleImage.src = './img/draggleSprite.png'
+const draggle = new Sprite ({
+    position:{
+        x: 800,
+        y: 100,
+    },
+    image: draggleImage,
+    frames: {
+        max: 4,
+        hold: 30,
+    },
+    animate: true
+})
+
+const embyImage= new Image()
+embyImage.src = './img/embySprite.png'
+const emby = new Sprite ({
+    position:{
+        x: 280,
+        y: 325,
+    },
+    image: embyImage,
+    frames: {
+        max: 4,
+        hold: 30,
+    },
+    animate: true
+})
+
+
+
+function animateBattle(){
+    window.requestAnimationFrame(animateBattle)
+    battleBackground.draw()
+    draggle.draw()
+    emby.draw()
+}
+animateBattle()
 
 let lastKey = ''
 window.addEventListener('keydown',(e) => {
