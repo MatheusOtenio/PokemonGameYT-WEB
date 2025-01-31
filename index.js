@@ -146,6 +146,7 @@ const battle = {
 
 function animate() {
     const animationId = window.requestAnimationFrame(animate);
+    document.querySelector('#userInterface').style.display = 'none'
 
     // Desenha o background na posição atualizada
     background.draw();
@@ -208,7 +209,10 @@ function animate() {
 
                 // desativar a animação atual
                 window.cancelAnimationFrame(animationId)
-
+                
+                audio.Map.stop()
+                audio.initBattle.play()
+                audio.battle.play()
                 battle.initiated = true
                 gsap.to('#overlappingDiv',{
                     opacity: 1,
@@ -221,6 +225,7 @@ function animate() {
                             duration: 0.4,
                             onComplete(){
                                 // activate nova animação
+                                initBattle()
                                 animateBattle()
                                 gsap.to('#overlappingDiv', {
                                     opacity: 0,
@@ -230,7 +235,6 @@ function animate() {
                         })
                     }
                 })
-                
                 break;
             }
         }
@@ -326,57 +330,7 @@ function animate() {
 }
 
 
-//animate()
-
-const battleBackgroundImage = new Image()
-battleBackgroundImage.src = './img/battleBackground.png'
-const battleBackground = new Sprite ({
-    position:{
-        x: 0,
-        y: 0
-    },
-    image: battleBackgroundImage
-})
-
-const draggleImage = new Image()
-draggleImage.src = './img/draggleSprite.png'
-const draggle = new Sprite ({
-    position:{
-        x: 800,
-        y: 100,
-    },
-    image: draggleImage,
-    frames: {
-        max: 4,
-        hold: 30,
-    },
-    animate: true
-})
-
-const embyImage= new Image()
-embyImage.src = './img/embySprite.png'
-const emby = new Sprite ({
-    position:{
-        x: 280,
-        y: 325,
-    },
-    image: embyImage,
-    frames: {
-        max: 4,
-        hold: 30,
-    },
-    animate: true
-})
-
-
-
-function animateBattle(){
-    window.requestAnimationFrame(animateBattle)
-    battleBackground.draw()
-    draggle.draw()
-    emby.draw()
-}
-animateBattle()
+animate()
 
 let lastKey = ''
 window.addEventListener('keydown',(e) => {
@@ -421,5 +375,14 @@ window.addEventListener('keyup',(e) => {
        case 'd':
            keys.d.pressed = false
            break      
+    }
+   })
+
+
+   let clicked = false
+   addEventListener('click', () => {
+    if (!clicked) {
+    audio.Map.play()
+    clicked = true
     }
    })
