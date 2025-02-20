@@ -24,9 +24,6 @@ Este é um jogo Pokémon desenvolvido com **JavaScript** e **HTML Canvas**, traz
 - **HTML5 Canvas**
 - **CSS3**
 
-## 📺 Referência
-Desenvolvido com base no tutorial:  
-🔗 [YouTube - Creating a Pokémon Game](https://youtube.com/watch?v=yP5DKzriqXA)
 
----
-📌 **Como rodar:** Basta abrir o arquivo `index.html` em um navegador compatível.  
+## 📺 Referência
+Desenvolvido com base no curso de Chris Courses
